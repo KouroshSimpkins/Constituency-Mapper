@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roads Table</title>
+</head>
+<body>
+  <h1>Roads Table</h1>
+  <form method="post">
+    <table>
+    <thead>
+      <tr>
+        <th>Road Name</th>
+        <th>Visited</th>
+        <th>Visited By</th>
+        <th>Mark as Visited</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.RoadName }}</td>
+        <td>{{ row.Visited }}</td>
+        <td>{{ row.VisitedBy }}</td>
+        <td>
+          <label>
+            <input type="checkbox" name="Visited" value="{{ row['id'] }}"
+                   {%  if row['Visited'] %} checked {% endif %}>
+          </label>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    <input type="submit" value="Update Visited Status">
+  </form>
+</body>
+</html>
