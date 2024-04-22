@@ -11,7 +11,7 @@ def test_app_root():
     """
     Default table route, shows the database with tickboxes to mark visited roads.
 
-    :return: A rendered HTML template with the database data.
+    :return: A rendered HTML template with the database Geojson_data.
     :rtype: flask.Response
     """
     conn = sqlite3.connect('ConstituencyMapperDB')

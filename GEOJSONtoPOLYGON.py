@@ -1,7 +1,7 @@
 import json
 # Using OpenStreetMap Boundaries from parlconst.org
 
-# Load your GeoJSON data
+# Load your GeoJSON Geojson_data
 geojson_data = {
   "type": "MultiPolygon",
   "coordinates": [
