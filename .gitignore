@@ -1,4 +1,5 @@
 .gradle
+.python-version
 .idea/
 !.idea/icon*.png
 *.iml
