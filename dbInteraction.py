@@ -2,21 +2,54 @@
 
 import mysql.connector
 import geojson
+from GEOJSONtoPOLYGON import generate_overpass_queries
+import requests
 
 
-with open('test_data.geojson') as f:
-    gj = geojson.load(f)
+all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
+london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
 
 
-road_names = []
-for feature in gj['features']:
-    if 'name' in feature['properties']:
-        road_names.append(feature['properties']['name'])
+def query_overpass_api(overpass_query):
+    """
+    Query the Overpass API and return the results.
+
+    :param: overpass_query (str): The Overpass API query to be executed.
+
+    :return: The JSON response from the Overpass API.
+    :rtype: dict
+    """
+
+    # Preparing the Overpass API endpoint
+    overpass_url = 'https://overpass-api.de/api/interpreter'
+
+    response = requests.get(overpass_url, data={'data': overpass_query})
+
+    if response.status_code != 200:
+        raise Exception(f"Error querying Overpass API: {response.status_code}")
+
+    return response.json()
 
 
-road_names = list(dict.fromkeys(road_names))
+def extract_street_names(overpass_response):
+    """
+    Extracts street names from an Overpass API response.
 
-print(road_names)
+    :param overpass_response: The response dictionary from the Overpass API.
+
+    :return: A list of street names.
+    :rtype: List
+    """
+
+    street_names_set = set()
+
+    for element in overpass_response.get("elements", []):
+        if element.get("tags", {}).get("highway"):
+            street_name = element.get("tags", {}).get("name")
+            street_names_set.add(street_name)
+
+    return list(street_names_set)
+
 
 try:
     conn = mysql.connector.connect(
