@@ -47,12 +47,14 @@ def extract_street_names(overpass_response):
     return list(street_names_set)
 
 
-def generate_constituency_database(constituency_name):
+# This is redundant as of new database decisions,
+# but I'll keep it here for now as it can help me generate test databases.
+def generate_constituency_database(test_db_name):
     """
     Generates a database with the name of the constituency,
     to help isolate the data for each parliamentary constituency.
 
-    :param constituency_name:
+    :param test_db_name:
     :return:
     """
 
@@ -71,7 +73,7 @@ def generate_constituency_database(constituency_name):
 
     cursor = conn.cursor()
 
-    db_name = str(constituency_name)
+    db_name = str(test_db_name)
     try:
         cursor.execute(f"CREATE DATABASE {db_name}")
         print(f"Database '{db_name}' created successfully.")
@@ -85,7 +87,9 @@ def generate_constituency_database(constituency_name):
 
     table_queries = [
         "CREATE TABLE Leafletters (user_id CHAR(36) PRIMARY KEY DEFAULT (UUID()), username VARCHAR(40), email_address VARCHAR(100), phone_number VARCHAR(20));" # noqa
-        "CREATE TABLE Roads (road_id CHAR(36) PRIMARY KEY DEFAULT (UUID()), road_name VARCHAR(255), last_visited DATETIME, visited BOOLEAN, visited_by CHAR(36), FOREIGN KEY (visited_by) REFERENCES Leafletters(user_id));" # noqa
+        "CREATE TABLE Constituencies (constituency_id CHAR(36) PRIMARY KEY DEFAULT (UUID()), name VARCHAR(255) UNIQUE NOT NULL);" # noqa
+        "CREATE TABLE Roads (road_id CHAR(36) PRIMARY KEY DEFAULT (UUID()), road_name VARCHAR(255), last_visited DATETIME, visited BOOLEAN, visited_by CHAR(36), constituency_id CHAR(36), FOREIGN KEY (visited_by) REFERENCES Leafletters(user_id), FOREIGN KEY (constituency_id) REFERENCES Constituencies(constituency_id));" # noqa
+        "CREATE TABLE Road_visits (visit_id CHAR(36) PRIMARY KEY DEFAULT (UUID()), road_id CHAR(36) NOT NULL, user_id CHAR(36) NOT NULL, visit_date DATETIME NOT NULL, constituency_id CHAR(36), FOREIGN KEY (road_id) REFERENCES Roads(road_id), FOREIGN KEY (user_id) REFERENCES Leafletters(user_id), FOREIGN KEY (constituency_id) REFERENCES Constituencies(constituency_id));" # noqa
     ]
 
     for table_query in table_queries:
@@ -98,7 +102,6 @@ def generate_constituency_database(constituency_name):
             else:
                 print(f"Error creating table: {err}")
 
-    conn.commit()
     cursor.close()
     conn.close()
 
@@ -107,9 +110,8 @@ if __name__ == '__main__':
     all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
     london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
 
-    overpass_response = query_overpass_api(london_westminster_query[0]['object'])
-    street_names_list = extract_street_names(overpass_response)
+    overpass_response_ = query_overpass_api(london_westminster_query[0]['object'])
+    street_names_list = extract_street_names(overpass_response_)
 
-    generate_constituency_database(london_westminster_query[0]['Name'])
-
-
+    generate_constituency_database('Test_DB_Zero')
+    # This test is to see if the database generation works.
