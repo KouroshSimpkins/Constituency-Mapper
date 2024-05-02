@@ -106,6 +106,61 @@ def generate_constituency_database(test_db_name):
     conn.close()
 
 
+def connect_to_database(db_name):
+    """
+    Connect to the specified database.
+
+    :param db_name: The name of the database to connect to.
+    :return: The connection and cursor objects.
+    """
+
+    try:
+        conn = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='change-me',
+            database=db_name
+        )
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Invalid username or password")
+        elif err.errno == errorcode.ER_BAD_DB_ERROR:
+            print(f"Database '{db_name}' does not exist")
+        else:
+            print(f"Error connecting to the MySQL server: {err}")
+        exit(1)
+
+    cursor = conn.cursor(buffered=True)
+
+    return conn, cursor
+
+
+def load_constituencies_to_database(db_name, region_file_path):
+    """
+    Load the constituencies into the database. Generally this is just done once per region,
+    but the function is here for maintenance purposes.
+
+    :param db_name: The name of the database to load the constituencies into.
+    :param region_file_path: The path to a geojson file containing the constituency boundaries.
+    :return:
+    """
+
+    conn, cursor = connect_to_database(db_name)
+    queries = generate_overpass_queries(region_file_path)
+
+    constituency_names = set()
+
+    for query in queries:
+        constituency_names.add(query['Name'])
+
+    for constituency_name in constituency_names:
+        cursor.execute("INSERT INTO Constituencies (name) VALUES (%s)", (constituency_name,)) # noqa
+        print(cursor.rowcount, "record inserted.")
+
+    conn.commit()
+    cursor.close()
+
+
 if __name__ == '__main__':
     all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
     london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
@@ -113,5 +168,17 @@ if __name__ == '__main__':
     overpass_response_ = query_overpass_api(london_westminster_query[0]['object'])
     street_names_list = extract_street_names(overpass_response_)
 
-    generate_constituency_database('Test_DB_Zero')
-    # This test is to see if the database generation works.
+    conn, cursor = connect_to_database('Test_DB_Zero')
+    print(conn)
+
+    cursor.execute("SELECT constituency_id FROM Constituencies WHERE name = 'Cities of London & Westminster'") # noqa
+    constituency_id = cursor.fetchone()[0]
+    print(constituency_id)
+
+    for road_name in street_names_list:
+        cursor.execute("INSERT INTO Roads (road_name, constituency_id) VALUES (%s, %s)", (road_name, constituency_id)) # noqa
+        print(cursor.rowcount, "record inserted.")
+        print(cursor.lastrowid)
+
+    conn.commit()
+    cursor.close()
