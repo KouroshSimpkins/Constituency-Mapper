@@ -75,6 +75,7 @@ def generate_constituency_database(test_db_name):
 
     db_name = str(test_db_name)
     try:
+        cursor.execute(f"DROP DATABASE {db_name}")
         cursor.execute(f"CREATE DATABASE {db_name}")
         print(f"Database '{db_name}' created successfully.")
     except mysql.connector.Error as err:
@@ -162,6 +163,33 @@ def load_constituencies_to_database(db_name, region_file_path):
 
 
 if __name__ == '__main__':
+    all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
+    london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
+
+    overpass_response_ = query_overpass_api(london_westminster_query[0]['object'])
+    street_names_list = extract_street_names(overpass_response_)
+
+    conn, cursor = connect_to_database('Test_DB_Zero')
+    print(conn)
+
+    cursor.execute("SELECT constituency_id FROM Constituencies WHERE name = 'Cities of London & Westminster'") # noqa
+    constituency_id = cursor.fetchone()[0]
+    print(constituency_id)
+
+    for road_name in street_names_list:
+        cursor.execute("INSERT INTO Roads (road_name, constituency_id) VALUES (%s, %s)", (road_name, constituency_id)) # noqa
+        print(cursor.rowcount, "record inserted.")
+        print(cursor.lastrowid)
+
+    conn.commit()
+    cursor.close()
+
+def init_db():
+    region_file_path = 'Geojson_data/2010_constituencies___england__south_.geojson'
+    db_name= 'Test_DB_Zero'
+    generate_constituency_database(db_name)
+    load_constituencies_to_database(db_name, region_file_path)
+
     all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
     london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
 

@@ -1,7 +1,10 @@
-from flask import Flask, flash, redirect, render_template, request, session, abort
+from flask import Flask, render_template, request, jsonify
 from flask import Flask
 import sqlite3
 import os
+import mysql.connector
+from mysql.connector import errorcode
+from dbInteraction import init_db
 
 app = Flask(__name__)
 
@@ -14,21 +17,38 @@ def test_app_root():
     :return: A rendered HTML template with the database Geojson_data.
     :rtype: flask.Response
     """
-    conn = sqlite3.connect('ConstituencyMapperDB')
-    conn.row_factory = sqlite3.Row
+
+    try:
+        conn = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='change-me',
+            database='Test_DB_Zero',
+        )
+    except mysql.connector.Error as err:
+        if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+            print("Invalid username or password")
+        else:
+            print(f"Error connecting to the MySQL server: {err}")
+        exit(1)
+
+    # conn = sqlite3.connect('ConstituencyMapperDB')
+    # conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     if request.method == 'POST':
-        updated_roads = request.form.getlist('visited_roads')
-        cursor.execute("UPDATE Roads SET Visited = 0")
+        updated_roads = request.form.getlist('visited')
+        print("POST called: ", updated_roads, flush=True)
+
+        # cursor.execute("UPDATE Roads SET Visited = 0")
         for road_id in updated_roads:
-            cursor.execute("UPDATE Roads SET Visited = 1 WHERE road_id = ?", (road_id,))
+            print("road_id:", road_id, flush=True)
+            cursor.execute("UPDATE Roads SET visited = 1 WHERE road_id = %s", (road_id,))
         conn.commit()
 
-    cursor.execute("SELECT * FROM Roads")
+    cursor.execute("SELECT * FROM Roads order by road_name")
     rows = cursor.fetchall()
     conn.close()
-
     return render_template('index.html', rows=rows)
 
 
@@ -37,6 +57,11 @@ def test_app_root():
 def test_app_map():
     return "Map page"
 
+# Initialize the database
+@app.route('/initdb', methods=['POST'])
+def post_endpoint():
+    init_db()
+    return jsonify({'message': 'Success'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=4000)
