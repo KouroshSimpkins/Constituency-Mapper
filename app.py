@@ -54,7 +54,7 @@ def test_app_root():
     cursor.execute(query)
     rows = cursor.fetchall()
 
-    cursor.execute("SELECT * from Leafletters")
+    cursor.execute("SELECT * FROM Leafletters order by username")
     leafletters = cursor.fetchall()
     conn.close()
     return render_template('index.html', rows=rows, leafletters=leafletters)
