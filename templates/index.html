@@ -33,6 +33,12 @@
       {% endfor %}
       </tbody>
     </table>
+    <label for="leafletter">Select Leafletter:</label>
+    <select id="leafletter" name="leafletter">
+        {% for leafletter in leafletters %}
+            <option value="{{ leafletter[0] }}">{{ leafletter[1] }}</option>
+        {% endfor %}
+    </select><br><br>
     <input type="submit" value="Update Visited Status">
   </form>
 </body>
