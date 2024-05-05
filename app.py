@@ -22,7 +22,7 @@ def test_app_root():
         updated_roads = request.form.getlist('visited_roads')
         cursor.execute("UPDATE Roads SET Visited = 0")
         for road_id in updated_roads:
-            cursor.execute("UPDATE Roads SET Visited = 1 WHERE id = ?", (road_id,))
+            cursor.execute("UPDATE Roads SET Visited = 1 WHERE road_id = ?", (road_id,))
         conn.commit()
 
     cursor.execute("SELECT * FROM Roads")

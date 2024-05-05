@@ -1,4 +1,6 @@
+.ds_store
 .gradle
+.python-version
 .idea/
 !.idea/icon*.png
 *.iml
