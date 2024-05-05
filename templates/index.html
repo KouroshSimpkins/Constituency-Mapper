@@ -20,13 +20,13 @@
       <tbody>
       {% for row in rows %}
       <tr>
-        <td>{{ row.RoadName }}</td>
-        <td>{{ row.Visited }}</td>
-        <td>{{ row.VisitedBy }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
         <td>
           <label>
-            <input type="checkbox" name="Visited" value="{{ row['id'] }}"
-                   {%  if row['Visited'] %} checked {% endif %}>
+            <input type="checkbox" name="visited" value="{{ row[0] }}"
+                   {%  if row[3] %} checked {% endif %}>
           </label>
         </td>
       </tr>
