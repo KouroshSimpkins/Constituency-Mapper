@@ -161,6 +161,22 @@ def load_constituencies_to_database(db_name, region_file_path):
     conn.commit()
     cursor.close()
 
+def create_leafletters(db_name, names):
+    """
+    Create leafletters in the database
+
+    :param db_name: The name of the database
+    :param names: The list of names of leafletters
+    :return:
+    """
+
+    conn, cursor = connect_to_database(db_name)
+    for name in names:
+        cursor.execute("INSERT INTO Leafletters (username) VALUES (%s)", (name,))
+        print(cursor.rowcount, "record inserted.")
+
+    conn.commit()
+    cursor.close()
 
 def init_db():
     """
@@ -185,6 +201,9 @@ def init_db():
     generate_constituency_database(db_name)
     load_constituencies_to_database(db_name, region_file_path)
 
+    leafletters_names = ['alice', 'bob', 'charlie']
+    create_leafletters(db_name, leafletters_names)
+
     all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
     london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
 
@@ -192,11 +211,9 @@ def init_db():
     street_names_list = extract_street_names(overpass_response_)
 
     conn, cursor = connect_to_database('Test_DB_Zero')
-    print(conn)
 
     cursor.execute("SELECT constituency_id FROM Constituencies WHERE name = 'Cities of London & Westminster'") # noqa
     constituency_id = cursor.fetchone()[0]
-    print(constituency_id)
 
     for road_name in street_names_list:
         cursor.execute("INSERT INTO Roads (road_name, constituency_id) VALUES (%s, %s)", (road_name, constituency_id)) # noqa

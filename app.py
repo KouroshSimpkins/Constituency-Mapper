@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask import Flask
-import sqlite3
-import os
+# import sqlite3
 import mysql.connector
 from mysql.connector import errorcode
 from dbInteraction import init_db
@@ -38,18 +37,23 @@ def test_app_root():
 
     if request.method == 'POST':
         updated_roads = request.form.getlist('visited')
+        visited_by = request.form.get('leafletter')
+        print("form: ", request.form, flush = True)
         print("POST called: ", updated_roads, flush=True)
+        print("visited_by:", visited_by, flush=True)
 
         # cursor.execute("UPDATE Roads SET Visited = 0")
         for road_id in updated_roads:
-            print("road_id:", road_id, flush=True)
-            cursor.execute("UPDATE Roads SET visited = 1 WHERE road_id = %s", (road_id,))
+            cursor.execute("UPDATE Roads SET visited = true, visited_by=%s WHERE road_id = %s", (visited_by, road_id))
         conn.commit()
 
     cursor.execute("SELECT * FROM Roads order by road_name")
     rows = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM Leafletters order by username")
+    leafletters = cursor.fetchall()
     conn.close()
-    return render_template('index.html', rows=rows)
+    return render_template('index.html', rows=rows, leafletters=leafletters)
 
 
 # The route for showing an interactive map that draws from the database in the previous page.

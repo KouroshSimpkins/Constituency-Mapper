@@ -3,7 +3,10 @@ package-mode = false
 name = "constituency-mapper"
 version = "0.1.0"
 description = ""
-authors = ["Kourosh Simpkins <kouroshsimpkins@gmail.com>"]
+authors = [
+    "Kourosh Simpkins <kouroshsimpkins@gmail.com>",
+    "Erdinc Mutlu <erdincmutlu@gmail.com>",
+]
 readme = "README.md"
 
 [tool.poetry.dependencies]
