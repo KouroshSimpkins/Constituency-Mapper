@@ -162,31 +162,26 @@ def load_constituencies_to_database(db_name, region_file_path):
     cursor.close()
 
 
-if __name__ == '__main__':
-    all_queries = generate_overpass_queries('Geojson_data/2010_constituencies___england__south_.geojson')
-    london_westminster_query = list(filter(lambda q: q['Name'] == 'Cities of London & Westminster', all_queries))
-
-    overpass_response_ = query_overpass_api(london_westminster_query[0]['object'])
-    street_names_list = extract_street_names(overpass_response_)
-
-    conn, cursor = connect_to_database('Test_DB_Zero')
-    print(conn)
-
-    cursor.execute("SELECT constituency_id FROM Constituencies WHERE name = 'Cities of London & Westminster'") # noqa
-    constituency_id = cursor.fetchone()[0]
-    print(constituency_id)
-
-    for road_name in street_names_list:
-        cursor.execute("INSERT INTO Roads (road_name, constituency_id) VALUES (%s, %s)", (road_name, constituency_id)) # noqa
-        print(cursor.rowcount, "record inserted.")
-        print(cursor.lastrowid)
-
-    conn.commit()
-    cursor.close()
-
 def init_db():
+    """
+    Initialize the database with constituencies and roads data.
+
+    This function performs the following tasks:
+    1. Set the region file path and database name.
+    2. Generate a new database using the specified name.
+    3. Load constituencies into the database from the region file.
+    4. Query the Overpass API for roads in the 'Cities of London & Westminster' constituency.
+    5. Extract the street names from the Overpass API response.
+    6. Connect to the database.
+    7. Retrieve the constituency ID for 'Cities of London & Westminster'.
+    8. Insert the street names into the Roads table, associating them with the constituency ID.
+    9. Commit the changes and close the database connection.
+
+    :return:
+    """
+
     region_file_path = 'Geojson_data/2010_constituencies___england__south_.geojson'
-    db_name= 'Test_DB_Zero'
+    db_name = 'Test_DB_Zero'
     generate_constituency_database(db_name)
     load_constituencies_to_database(db_name, region_file_path)
 
@@ -210,3 +205,7 @@ def init_db():
 
     conn.commit()
     cursor.close()
+
+
+if __name__ == '__main__':
+    init_db()

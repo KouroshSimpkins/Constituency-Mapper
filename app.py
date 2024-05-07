@@ -57,11 +57,13 @@ def test_app_root():
 def test_app_map():
     return "Map page"
 
+
 # Initialize the database
 @app.route('/initdb', methods=['POST'])
 def post_endpoint():
     init_db()
     return jsonify({'message': 'Success'})
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=4000)
