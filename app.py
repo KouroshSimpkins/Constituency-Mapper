@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify
 from flask import Flask
-# import sqlite3
 import mysql.connector
 from mysql.connector import errorcode
 from dbInteraction import init_db
@@ -31,23 +30,28 @@ def test_app_root():
             print(f"Error connecting to the MySQL server: {err}")
         exit(1)
 
-    # conn = sqlite3.connect('ConstituencyMapperDB')
-    # conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     if request.method == 'POST':
         updated_roads = request.form.getlist('visited')
-        visited_by = request.form.get('leafletter')
-        print("form: ", request.form, flush = True)
+        visited_by = request.form.getlist('leafletter')[0]
         print("POST called: ", updated_roads, flush=True)
-        print("visited_by:", visited_by, flush=True)
+        print("visited_by: ", visited_by, flush=True)
 
         # cursor.execute("UPDATE Roads SET Visited = 0")
         for road_id in updated_roads:
-            cursor.execute("UPDATE Roads SET visited = true, visited_by=%s WHERE road_id = %s", (visited_by, road_id))
+            print("road_id:", road_id, flush=True)
+            cursor.execute("UPDATE Roads SET visited = true, visited_by=%s WHERE road_id = %s", (visited_by, road_id,))
         conn.commit()
 
-    cursor.execute("SELECT * FROM Roads order by road_name")
+    query = ("SELECT r.road_id, r.road_name, "
+    "CASE WHEN r.visited = 1 THEN 'Yes' ELSE 'No' END AS visited, "
+    "COALESCE(l.username, '-') AS username "
+    "FROM Roads as r "
+    "LEFT JOIN Leafletters as l "
+    "ON l.user_id = r.visited_by "
+    "ORDER BY r.road_name")
+    cursor.execute(query)
     rows = cursor.fetchall()
 
     cursor.execute("SELECT * FROM Leafletters order by username")
