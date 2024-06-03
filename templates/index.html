@@ -21,18 +21,19 @@
       {% for row in rows %}
       <tr>
         <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
         <td>{{ row[3] }}</td>
-        <td>{{ row[4] }}</td>
         <td>
           <label>
             <input type="checkbox" name="visited" value="{{ row[0] }}"
-                   {%  if row[3] %} checked {% endif %}>
+                   {%  if row[2] == 'Yes' %} checked {% endif %}>
           </label>
         </td>
       </tr>
       {% endfor %}
       </tbody>
     </table>
+    <p>
     <label for="leafletter">Select Leafletter:</label>
     <select id="leafletter" name="leafletter">
         {% for leafletter in leafletters %}
