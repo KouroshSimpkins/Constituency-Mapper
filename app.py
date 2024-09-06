@@ -6,7 +6,6 @@ from dbInteraction import init_db
 
 app = Flask(__name__)
 
-
 @app.route('/', methods=['GET', 'POST'])
 def test_app_root():
     """
@@ -67,7 +66,7 @@ def test_app_map():
 
 
 # Initialize the database
-@app.route('/initdb', methods=['POST'])
+@app.route('/initdb', methods=['GET', 'POST'])
 def post_endpoint():
     init_db()
     return jsonify({'message': 'Success'})
