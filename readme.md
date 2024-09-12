@@ -1,4 +1,4 @@
-# Constituency Mapper
+# Leaflet Mapper
 Constituency Mapper is a Flask-based application designed to manage and visualize constituency data using a MySQL database and Overpass API. The application allows users to mark roads as visited and track leafletters.
 
 ## Key Features
