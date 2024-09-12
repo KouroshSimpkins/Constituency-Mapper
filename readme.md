@@ -15,36 +15,47 @@ The root route (/) displays a table of roads within a specified constituency. Us
 ## Getting Started
 
 ### Prerequisites
-- Python 3.12
+- **Python 3.12**
 
-- MySQL server
+- **MySQL server** - We recommend using Docker to run a MySQL server for development purposes.
 
-- Poetry
+- **Poetry**
 
-## Installation Steps
+## Installation Steps - Development
 
-**1. Clone the Repository:**
+If you want to contribute to this project, please ensure you have the prerequisite software installed.
+
+**1. Install Prerequisites:**
+
+To ensure you can get developing as quickly as possible, ensure you have all the requirements installed as outlined in the
+"prerequisites" section.
+
+**2. Clone the Repository:**
 ```
 git clone https://github.com/KouroshSimpkins/Constituency-Mapper.git
 cd constituency-mapper
 ```
 
-**2. Install Dependencies:**
+**3. Install Dependencies:**
+
+The dependencies are different to the prerequisites, you can view them by looking at the pyproject.toml file.
 
 Ensure you have Poetry installed, then run:
 ```
 poetry install
 ```
 
-**3. Set Up MySQL Database:**
+**4. Set Up MySQL Database:**
 
-Ensure your MySQL server is running on localhost. 
+Ensure your MySQL server is running on localhost.
 
-**4. Initialize the Database:**
+>We highly recommend running Docker in a mysql container when developing.
+
+**5. Initialize the Database:**
 
 Start the Flask application.
 ```
-flask -m app run
+python app.py
 ```
 Then, open a browser and navigate to http://localhost:4000/initdb to initialize the database.
 
