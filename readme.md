@@ -59,7 +59,8 @@ python app.py
 ```
 Then, open a browser and navigate to http://localhost:4000/inittestdb to initialize the database.
 
-**future dev**
+## future dev
+
 The current upgrade focus is on moving the development containers to a single docker compose file to streamline development.
 This feature should be ready by the end of October, so for ease and consistency, if you don't already have an environment set up it is best to wait before contributing!
 
