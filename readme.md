@@ -57,7 +57,13 @@ Start the Flask application.
 ```
 python app.py
 ```
-Then, open a browser and navigate to http://localhost:4000/initdb to initialize the database.
+Then, open a browser and navigate to http://localhost:4000/inittestdb to initialize the database.
+
+**future dev**
+The current upgrade focus is on moving the development containers to a single docker compose file to streamline development.
+This feature should be ready by the end of October, so for ease and consistency, if you don't already have an environment set up it is best to wait before contributing!
+
+After compose has been set up we will be deploying a development server to enable us to perform integration testing, as well as enabling some initial "field tests" of the software.
 
 ## Usage
 - Access the application by navigating to http://localhost:4000 in your web browser.
