@@ -1,0 +1,24 @@
+version: '0.1'
+services:
+  flask-app:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      MYSQL_HOST: "db"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "change-me"
+      MYSQL_DATABASE: "Test_DB_Zero"
+    depends_on:
+      - db
+    volumes:
+      - .:/app
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "change-me"
+      MYSQL_DATABASE: "Test_DB_Zero"
+    ports:
+      - "3306:3306"
