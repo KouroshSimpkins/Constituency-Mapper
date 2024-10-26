@@ -17,7 +17,7 @@ def test_app_root():
 
     try:
         conn = mysql.connector.connect(
-            host='localhost',
+            host='db',
             user='root',
             password='change-me',
             database='Test_DB_Zero',

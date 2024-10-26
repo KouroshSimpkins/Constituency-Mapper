@@ -60,7 +60,7 @@ def generate_constituency_database(test_db_name):
 
     try:
         conn = mysql.connector.connect(
-            host='localhost',
+            host='db',
             user='root',
             password='change-me',
         )
@@ -117,7 +117,7 @@ def connect_to_database(db_name):
 
     try:
         conn = mysql.connector.connect(
-            host='localhost',
+            host='db',
             user='root',
             password='change-me',
             database=db_name
