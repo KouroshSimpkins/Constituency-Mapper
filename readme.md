@@ -59,6 +59,26 @@ python app.py
 ```
 Then, open a browser and navigate to http://localhost:4000/inittestdb to initialize the database.
 
+## Installation Steps - Docker
+
+If you are familiar with Docker Compose, then the development environment can be set up with a pair of commands.
+
+First, create the flask image using the Dockerfile in the root directory.
+```
+docker build -t flask-server .
+```
+flask-server is a placeholder, you can name it however you like.
+
+Secondly, run the docker-compose file to create the linked database and the flask server container.
+```
+docker compose up --build
+```
+Once Docker confirms these containers are running, you will be able to access the application via localhost:4000.
+Ensure that you initialise the database by navigating to localhost:4000/inittestdb.
+
+You can of course manage this installation independently, but keep in mind any modifications to the underlying docker
+configuration could cause issues when creating pull requests, as the CI/CD pipeline will be expecting the default configuration.
+
 ## future dev
 
 The current upgrade focus is on moving the development containers to a single docker compose file to streamline development.
