@@ -24,7 +24,9 @@ jobs:
         echo "${{ github.workspace }}/.local/bin" >> $GITHUB_PATH
 
     - name: Install dependencies
-      run: poetry install
+      run: |
+        poetry lock --no-update
+        poetry install
 
     - name: Cache Poetry dependencies
       uses: actions/cache@v4
